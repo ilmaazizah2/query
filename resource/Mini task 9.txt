@@ -1,0 +1,33 @@
+Nomor 1
+select
+  customer_name,
+  count(distinct customer_id) as customer_id
+from
+  `tokopaedi.orders` 
+GROUP BY 
+  customer_name
+HAVING 
+  COUNT(DISTINCT 2) = 1
+order by 2 desc 
+
+Nomor 2
+select
+  product_name,
+  sum (quantity) as total_kuantitas
+from
+  `tokopaedi.orders` 
+GROUP BY 1
+order by 2 desc
+limit 1
+
+Nomor 3
+select
+  product_name,
+  sum (profit) as total_profit
+from
+  `tokopaedi.orders` 
+GROUP BY 1
+having sum(profit) < 0
+order by 2 desc
+limit 1
+

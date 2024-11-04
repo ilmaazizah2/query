@@ -1,0 +1,9 @@
+select
+    city,
+    customer_name,
+    avg(sales) as rataspending
+from
+    `tokopaedi.orders`
+where city = 'New York City' , 'Los Angeles' , 'Seattle'
+group by 1
+order by 2 desc

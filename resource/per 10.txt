@@ -1,0 +1,66 @@
+SELECT
+  candidate_id
+FROM
+  candidates
+where skill in ('Python', 'Tableau', 'PostgreSQL')
+group by 1
+having count(skill) = 3
+
+amazon
+
+SELECT 
+  EXTRACT(month from submit_date) mth,
+  product_id as product,
+  round(avg(stars),2) as avg_stars
+FROM
+  reviews
+GROUP BY
+  1,2
+ORDER BY
+  1,2
+
+data lemur
+SELECT 
+  part, 
+  assembly_step 
+FROM parts_assembly 
+WHERE finish_date IS NULL;
+
+
+Miccrosoft
+SELECT
+  sender_id,
+  count(DISTINCT message_id) message_count
+FROM
+  messages
+WHERE
+  EXTRACT(month from sent_date) = 8
+  and EXTRACT(year from sent_date) = 2022
+group by 
+  1
+order by 2 desc
+limit 2
+
+uber
+WITH
+trx_with_num as (
+SELECT
+  *,
+  row_number() 
+    over(
+      partition by user_id 
+      order by transaction_date
+    ) trx_num
+FROM
+  transactions
+order by 1, 3
+
+)
+
+select 
+  user_id,
+  spend,
+  transaction_date
+from trx_with_num where trx_num = 3
+
+-- windows function tidak bisa difilter dgn where dan having

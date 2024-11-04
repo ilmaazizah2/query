@@ -1,0 +1,41 @@
+------Nomor 1
+Q: Selama transaksi yang terjadi selama 2021, pada bulan apa total nilai transaksi
+(after_discount) paling besar? Gunakan is_valid = 1 untuk memfilter data transaksi.
+Source table: order_detail
+
+select * from order_detail
+
+SELECT to_char(order_date, 'Month') As montH_2021,
+	sum(after_discount) as total_transaction_value
+ from order_detail
+ where (order_date between '2021-01-01' and '2021-12-31')
+ 		and is_valid = 1
+ group by order_date
+ order by 2 desc
+ 
+ 
+ SELECT
+    to_char(order_date, 'Month') As montH_2021,
+  SUM(after_discount) AS total_transaction_value
+FROM order_detail
+WHERE order_date between '2021-01-01' and '2021-12-31'
+AND is_valid = 1
+GROUP BY order_date
+ORDER BY total_transaction_value DESC
+LIMIT 5;
+
+-Q: Selama transaksi pada tahun 2022, kategori apa yang menghasilkan nilai transaksi paling
+besar? Gunakan is_valid = 1 untuk memfilter data transaksi---.
+Source table: order_detail, sku_detail
+
+select sd.category,
+	sum(od.after_discount * od.qty_ordered) as total_transaction_value
+from "order_detail" AS od
+left join 
+	sku_detail sd 
+    ON od.sku_id= sd.id
+where od.is_valid = 1
+and od.order_date between '2022-01-01' and '2022-12-31'
+group by sd.category
+order by total_transaction_value desc
+LIMIT 3;

@@ -1,0 +1,110 @@
+select
+  customer_name,
+  sum(sales) total_penjualan
+  from
+  (
+  select
+  o.order_id,
+  s.order_date,
+  s.ship_date,
+  s.ship_mode,
+  o.customer_id,
+  c.customer_name,
+  c.segment,
+  o.postal_code,
+  r.city,
+  r.state,
+  r.region,
+  r.country,
+  o.product_id,
+  p.product_name,
+  p.subcategory,
+  p.category,
+  o.sales,
+  o.quantity,
+  o.discount,
+  o.profit
+from
+  `bi_warehouse.orders` as o
+  left join `bi_warehouse.customer` as c on o.customer_id = c.customer_id
+  left join `bi_warehouse.region` as r on o.postal_code = r.postal_code
+  left join `bi_warehouse.product` as p on o.product_id = p.product_id
+  left join `bi_warehouse.shipment` as s on o.order_id = s.order_id
+  )
+group by customer_name
+
+
+
+CTE
+
+  select
+  o.order_id,
+  s.order_date,
+  s.ship_date,
+  s.ship_mode,
+  o.customer_id,
+  c.customer_name,
+  c.segment,
+  o.postal_code,
+  r.city,
+  r.state,
+  r.region,
+  r.country,
+  o.product_id,
+  p.product_name,
+  p.subcategory,
+  p.category,
+  o.sales,
+  o.quantity,
+  o.discount,
+  o.profit
+from
+  `bi_warehouse.orders` as o
+  left join `bi_warehouse.customer` as c on o.customer_id = c.customer_id
+  left join `bi_warehouse.region` as r on o.postal_code = r.postal_code
+  left join `bi_warehouse.product` as p on o.product_id = p.product_id
+  left join `bi_warehouse.shipment` as s on o.order_id = s.order_id
+
+
+
+CTE
+with
+trx_table as( 
+  select
+  o.order_id,
+  s.order_date,
+  s.ship_date,
+  s.ship_mode,
+  o.customer_id,
+  c.customer_name,
+  c.segment,
+  o.postal_code,
+  r.city,
+  r.state,
+  r.region,
+  r.country,
+  o.product_id,
+  p.product_name,
+  p.subcategory,
+  p.category,
+  o.sales,
+  o.quantity,
+  o.discount,
+  o.profit
+from
+  `bi_warehouse.orders` as o
+  left join `bi_warehouse.customer` as c on o.customer_id = c.customer_id
+  left join `bi_warehouse.region` as r on o.postal_code = r.postal_code
+  left join `bi_warehouse.product` as p on o.product_id = p.product_id
+  left join `bi_warehouse.shipment` as s on o.order_id = s.order_id
+)
+
+, sales_by_cust as(  
+select 
+   customer_name,
+   sum(sales) total_sales
+from trx_table
+group by customer_name
+)
+
+select * from sales_by_cust

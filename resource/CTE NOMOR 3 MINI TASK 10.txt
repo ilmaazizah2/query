@@ -1,0 +1,36 @@
+CTE NOMOR 3 MINI TASK 10
+
+WITH CityRevenue AS (
+  -- Query pertama untuk menghitung total revenue per kota
+  SELECT 
+    city, 
+    SUM((sales * quantity) * (1 - discount)) AS total_revenue
+  FROM `tokopaedi.orders`
+  GROUP BY city
+  ORDER BY total_revenue DESC
+  LIMIT 3
+),
+CitySpending AS (
+  -- Query kedua yang menggunakan kota dari CTE pertama
+  SELECT
+    city,
+    customer_name,
+    AVG(sales) AS rataspending
+  FROM `tokopaedi.orders`
+  WHERE city IN (SELECT city FROM CityRevenue)
+  GROUP BY city, customer_name
+  ORDER BY rataspending DESC
+),
+AverageSpending AS (
+  -- Menghitung rata-rata pengeluaran (rataspending) dari hasil query kedua
+  SELECT AVG(rataspending) AS avg_spending
+  FROM CitySpending
+)
+-- Query untuk menampilkan konsumen dengan spending di atas rata-rata
+SELECT 
+  cs.city, 
+  cs.customer_name, 
+  cs.rataspending
+FROM CitySpending cs
+WHERE cs.rataspending > (SELECT avg_spending FROM AverageSpending)
+ORDER BY cs.rataspending DESC;
