@@ -1,0 +1,173 @@
+Soal 1
+
+Mengacu pada table ms_produk, tampilkan daftar produk yang memiliki harga antara 50.000 and 150.000.
+
+Nama kolom yang harus ditampilkan: no_urut, kode_produk, nama_produk, dan harga.
+
+SELECT * FROM ms_produk
+where harga between 50000 and 150000;
+
+Soal 2
+Tampilkan semua produk yang mengandung kata Flashdisk.
+
+Nama kolom yang harus ditampilkan: no_urut, kode_produk, nama_produk, dan harga.
+
+SELECT * FROM ms_produk
+WHERE nama_produk LIKE '%Flashdisk%
+
+
+Soal 3
+Tampilkan hanya nama-nama pelanggan yang hanya memiliki gelar-gelar berikut: S.H, Ir. dan Drs.
+
+Nama kolom yang harus ditampilkan: no_urut, kode_pelanggan, nama_pelanggan, dan alamat.
+
+SELECT  no_urut, kode_pelanggan, nama_pelanggan, alamat
+FROM ms_pelanggan
+WHERE nama_pelanggan LIKE '%S.H.%' 
+OR nama_pelanggan LIKE '%Ir.%' 
+OR nama_pelanggan LIKE '%Drs.%';
+
+
+Soal 4
+Tampilkan nama-nama pelanggan dan urutkan hasilnya berdasarkan kolom nama_pelanggan dari yang terkecil ke yang terbesar (A ke Z).
+
+Nama kolom yang harus ditampilkan: nama_pelanggan.
+
+SELECT nama_pelanggan
+FROM ms_pelanggan
+ORDER BY nama_pelanggan asc;
+
+
+Mengurutkan nama tanpa gelar
+
+Soal 5
+Tampilkan nama-nama pelanggan dan urutkan hasilnya berdasarkan kolom nama_pelanggan dari yang terkecil ke yang terbesar (A ke Z), namun gelar tidak boleh menjadi bagian dari urutan. Contoh: Ir. Agus Nugraha harus berada di atas Heidi Goh.
+
+Query 
+SELECT nama_pelanggan
+FROM ms_pelanggan
+ORDER BY 
+TRIM(REPLACE(REPLACE(REPLACE(nama_pelanggan, 'Ir. ', ''), 'Dr. ', ''), 'S.H. ', ''));
+
+
+soal 6
+Tampilkan nama pelanggan yang memiliki nama paling panjang. Jika ada lebih dari 1 orang yang memiliki panjang nama yang sama, tampilkan semuanya.
+
+query
+SELECT nama_pelanggan
+FROM ms_pelanggan
+WHERE LENGTH(nama_pelanggan) = (
+    SELECT MAX(LENGTH(nama_pelanggan))
+    FROM ms_pelanggan
+);
+
+
+Soal 7
+
+Tampilkan nama orang yang memiliki nama paling panjang (pada row atas), dan nama orang paling pendek (pada row setelahnya). Gelar menjadi bagian dari nama. Jika ada lebih dari satu nama yang paling panjang atau paling pendek, harus ditampilkan semuanya.
+
+-- Nama dengan panjang maksimum
+SELECT nama_pelanggan
+FROM ms_pelanggan
+WHERE LENGTH(nama_pelanggan) = (
+    SELECT MAX(LENGTH(nama_pelanggan))
+    FROM ms_pelanggan
+)
+
+UNION ALL   --- menggabungkan hasil query pertama dan query kedua sehingga nama terpanjang di atas dan nama terpendek di bawahnya
+
+-- Nama dengan panjang minimum
+SELECT nama_pelanggan
+FROM ms_pelanggan
+WHERE LENGTH(nama_pelanggan) = (
+    SELECT MIN(LENGTH(nama_pelanggan))
+    FROM ms_pelanggan
+);
+
+
+
+soal 8 
+
+Tampilkan produk yang paling banyak terjual dari segi kuantitas. Jika ada lebih dari 1 produk dengan nilai yang sama, tampilkan semua produk tersebut.
+
+SELECT SUM(harga), kode_produk, nama_produk, total_qty --- menampilkan kolom yang dipilih
+FROM ms_produk
+GROUP BY nama_produk  --- mengelompokkan hasil berdasarkan nama produk, ehingga hasil yang ditampilkan adalah total harga, kode produk, nama produk, dan total kuantitas untuk setiap nama produk yang berbeda.
+ORDER BY total_qty asc; --- mengurtkan hasil berdasarkan total quanitas dan urut dari yg terkecil (asc)
+
+
+Soal 9
+
+Tampilkan produk yang paling banyak terjual dari segi kuantitas. Jika ada lebih dari 1 produk dengan nilai yang sama, tampilkan semua produk tersebut.
+
+Nama kolom yang harus ditampilkan: kode_produk, nama_produk,total_qty.
+
+SELECT 
+    p.kode_produk AS kode_produk,
+    p.nama_produk AS nama_produk,
+    SUM(d.qty) AS total_qty
+FROM 
+    ms_produk AS p
+JOIN 
+    tr_penjualan_detail AS d ON p.kode_produk = d.kode_produk --- note setelah join bisa tambah query lagi tidak harus cte
+GROUP BY 
+    p.kode_produk, p.nama_produk
+ORDER BY 
+    total_qty desc
+LIMIT 2;
+
+
+Soal 10
+Siapa saja pelanggan yang paling banyak menghabiskan uangnya untuk belanja? Jika ada lebih dari 1 pelanggan dengan nilai yang sama, tampilkan semua pelanggan tersebut.
+
+Nama kolom yang harus ditampilkan: kode_pelanggan, nama_pelanggan, total_harga.
+
+
+ket : menggabungkan 3 tabel
+SELECT pel.kode_pelanggan,
+       pel.nama_pelanggan,
+       SUM(d.qty * d.harga_satuan) AS total_harga
+FROM ms_pelanggan AS pel
+JOIN tr_penjualan AS t ON pel.kode_pelanggan = t.kode_pelanggan
+JOIN tr_penjualan_detail AS d ON t.kode_transaksi = d.kode_transaksi
+GROUP BY pel.kode_pelanggan, pel.nama_pelanggan
+ORDER BY total_harga desc
+LIMIT 1;
+
+
+Soal 11
+
+Tampilkan daftar pelanggan yang belum pernah melakukan transaksi.
+
+Nama kolom yang harus ditampilkan: kode_pelanggan, nama_pelanggan, alamat.
+
+SELECT p.kode_pelanggan, p.nama_pelanggan, p.alamat
+FROM ms_pelanggan p
+LEFT JOIN tr_penjualan t ON p.kode_pelanggan = t.kode_pelanggan
+WHERE t.kode_pelanggan IS NULL;
+
+Soal 12
+
+Tampilkan transaksi-transaksi yang memiliki jumlah item produk lebih dari 1 jenis produk. Dengan lain kalimat, tampilkan transaksi-transaksi yang memiliki jumlah baris data pada table tr_penjualan_detail lebih dari satu.
+
+Nama kolom yang harus ditampilkan:  kode_transaksi, kode_pelanggan, nama_pelanggan, tanggal_transaksi, jumlah_detail
+
+Query
+
+SELECT 
+    t.kode_transaksi,
+    pel.kode_pelanggan,
+    pel.nama_pelanggan,
+    t.tanggal_transaksi,
+    COUNT(d.kode_produk) AS jumlah_detail
+FROM 
+    ms_pelanggan AS pel
+JOIN 
+    tr_penjualan AS t ON pel.kode_pelanggan = t.kode_pelanggan
+JOIN 
+    tr_penjualan_detail AS d ON t.kode_transaksi = d.kode_transaksi
+GROUP BY 
+    t.kode_transaksi, pel.kode_pelanggan, pel.nama_pelanggan, t.tanggal_transaksi --- masukan semua kolom yang tidak diagregasi (count)
+HAVING 
+    COUNT(d.kode_produk) > 1;
+
